@@ -6,7 +6,7 @@ password = "AeT8hs9lOLSq"
 database = "neondb"
 host = "ep-weathered-resonance-391969.eu-central-1.aws.neon.tech"
 
-token = '6520560204:AAHMekvuecUDbov6i6oQ0q-id9JmZUx_2e4'
+token = '5362234675:AAHmNWHS2xAiSMkph6bV0sv-0YEUc4CFfUA'
 
 class UserDb:
     def __init__(self, message: Message):
@@ -29,6 +29,25 @@ class UserDb:
             return False
         except Exception as e:
             pass
+        finally:
+            await con.close()
+
+    @staticmethod
+    async def increase(_id: int):
+        con = await asyncpg.connect(user=user, password=password, database=database, host=host)
+        try:
+            await con.execute(
+                'UPDATE users SET refs = refs + 1 WHERE id = $1',
+                _id
+            )
+        finally:
+            await con.close()
+
+    @staticmethod
+    async def get_refs(_id: int):
+        con = await asyncpg.connect(user=user, password=password, database=database, host=host)
+        try:
+            return await con.fetchval('select refs from users where id = $1', _id)
         finally:
             await con.close()
 
